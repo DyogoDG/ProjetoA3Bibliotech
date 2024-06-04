@@ -24,8 +24,6 @@ function getCategoria(url) {
 function listaTabelaCategoria(){	
 	data = getCategoria("http://localhost:8080/categorias")
     categorias = JSON.parse(data);
-    console.log(categorias);
-    console.log(this.categorias.length);
     const tbody = document.getElementById("tbodyCategoria")
 
 	for(let i = 0; i < this.categorias.length; i++) {  		      

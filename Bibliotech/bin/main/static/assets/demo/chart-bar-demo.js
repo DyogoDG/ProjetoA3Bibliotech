@@ -41,7 +41,7 @@ quantidade = novoJson.map(function(elem){
 })
 quantidadeMax = Math.max.apply(null, quantidade) + 5;
 
-// GRAFICO
+// GRAFICO LIVRO POR CATEGORIA
 var ctx = document.getElementById("graficoQtdCategoria");
 var myLineChart = new Chart(ctx, {
   type: 'bar',
@@ -71,6 +71,88 @@ var myLineChart = new Chart(ctx, {
         ticks: {
           min: 0,
           max: quantidadeMax,
+          maxTicksLimit: 5
+        },
+        gridLines: {
+          display: true
+        }
+      }],
+    },
+    legend: {
+      display: false
+    }
+  }
+});
+
+// CONSULTA A API DE LIVROS PARA POPULAR AS VARIAVEIS DO GRAFICO
+function getEstoque(urlEstoque) {
+    let request = new XMLHttpRequest()
+    request.open("GET", urlEstoque, false)
+    request.send()
+    return request.responseText
+}
+
+dataEstoque = getEstoque("http://localhost:8080/estoquelivros");
+estoqueLivros = JSON.parse(dataEstoque);
+
+// OBJETO PARA ARMAZENAR AS QUANTIDADES POR BIBLIOTECA
+const quantidadePorBiblioteca = {};
+
+// CALCULAR A QUANTIDADE POR CATEGORIA
+estoqueLivros.forEach(estoque => {
+    const bibliotecaId = estoque.biblioteca.biblioteca_id;
+    quantidadePorBiblioteca[bibliotecaId] = (quantidadePorBiblioteca[bibliotecaId] || 0) + 1;
+});
+
+// CRIA ARRAY DE OBJETOS
+const novoJsonEstoque = Object.keys(quantidadePorBiblioteca).map(bibliotecaId => {
+    const bibliotecaNome = estoqueLivros.find(estoque => estoque.biblioteca.biblioteca_id === parseInt(bibliotecaId)).biblioteca.nome;
+    return {
+        bibliotecaid: parseInt(bibliotecaId),
+        bibliotecanome: bibliotecaNome,
+        bibliotecaquantidade: quantidadePorBiblioteca[bibliotecaId]
+    };
+});
+
+// POPULA AS VARIAVEIS PARA LABEL, DATA E TAMANHO DO GRAFICO
+nomeBiblioteca = novoJsonEstoque.map(function(elem){
+	return elem.bibliotecanome;
+})
+quantidadeBiblioteca = novoJsonEstoque.map(function(elem){
+	return elem.bibliotecaquantidade;
+})
+quantidadeMaxBiblioteca = Math.max.apply(null, quantidadeBiblioteca) + 5;
+
+// GRAFICO LIVRO POR CATEGORIA
+var ctx = document.getElementById("graficoQtdBiblioteca");
+var myLineChart = new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: nomeBiblioteca,
+    datasets: [{
+      label: "Quantidade",
+      backgroundColor: "rgba(56,118,29,1)",
+      borderColor: "rgba(56,118,29,1)",
+      data: quantidadeBiblioteca,
+    }],
+  },
+  options: {
+    scales: {
+      xAxes: [{
+        time: {
+          unit: 'month'
+        },
+        gridLines: {
+          display: false
+        },
+        ticks: {
+          maxTicksLimit: 6
+        }
+      }],
+      yAxes: [{
+        ticks: {
+          min: 0,
+          max: quantidadeMaxBiblioteca,
           maxTicksLimit: 5
         },
         gridLines: {

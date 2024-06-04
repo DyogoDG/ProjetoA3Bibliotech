@@ -16,4 +16,9 @@ window.addEventListener('DOMContentLoaded', event => {
     if (datatablesSimpleBiblioteca) {
         new simpleDatatables.DataTable(datatablesSimpleBiblioteca);
     }
+    
+    const datatablesSimpleEstoque = document.getElementById('datatablesSimpleEstoque');
+    if (datatablesSimpleEstoque) {
+        new simpleDatatables.DataTable(datatablesSimpleEstoque);
+    }
 });
